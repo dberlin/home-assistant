@@ -8,6 +8,7 @@ from pyHS100 import (
     SmartBulb,
     SmartDevice,
     SmartPlug,
+    SmartStrip,
     SmartDeviceException
 )
 
@@ -84,8 +85,11 @@ async def async_discover_devices(
             # If this device already exists, ignore dynamic setup.
             if existing_devices.has_device_with_host(dev.host):
                 continue
-
-            if isinstance(dev, SmartPlug):
+            # Convert the smart strip into the right number of plugs
+            if isinstance(dev, SmartStrip):
+                for plug in dev.plugs:
+                    switches.append(plug)
+            elif isinstance(dev, SmartPlug):
                 try:
                     if dev.is_dimmable:  # Dimmers act as lights
                         lights.append(dev)
